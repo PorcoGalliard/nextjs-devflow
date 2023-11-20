@@ -44,6 +44,20 @@ export const sidebarLinks: SidebarLink[] = [
   },
 ];
 
+export const topQuestions = [
+  { value: "Kenapa ya penyesalan selalu ada di akhir", label: 1 },
+  { value: "Karena kalau muncul di awal namanya perkenalan", label: 2 },
+  { value: "Karena kalau muncul di awal namanya perkenalan", label: 3 },
+];
+
+export const popularTags = [
+  { _id: 1, name: "NEXT JS", totalQuestions: 5 },
+  { _id: 2, name: "REACT JS", totalQuestions: 10 },
+  { _id: 3, name: "ANGULAR JS", totalQuestions: 8 },
+  { _id: 4, name: "GOLANG", totalQuestions: 30 },
+  { _id: 5, name: "JAVA", totalQuestions: 25 },
+];
+
 export const BADGE_CRITERIA = {
   QUESTION_COUNT: {
     BRONZE: 10,
