@@ -45,9 +45,16 @@ export const sidebarLinks: SidebarLink[] = [
 ];
 
 export const topQuestions = [
-  { value: "Kenapa ya penyesalan selalu ada di akhir", label: 1 },
-  { value: "Karena kalau muncul di awal namanya perkenalan", label: 2 },
-  { value: "Karena kalau muncul di awal namanya perkenalan", label: 3 },
+  { value: "Tebak aku suka sama siapa 😋", label: 1 },
+  { value: "Hmmm siapa ya", label: 2 },
+  { value: "Kamu suka Dina kan", label: 3 },
+];
+
+export const filterType = [
+  { _id: 1, value: "Newest" },
+  { _id: 2, value: "Recommended" },
+  { _id: 3, value: "Frequent" },
+  { _id: 4, value: "Unanswered" },
 ];
 
 export const popularTags = [
