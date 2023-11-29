@@ -5,6 +5,7 @@ import (
 	"os"
 
 	"github.com/fullstack/dev-overflow/types"
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 )
@@ -25,7 +26,8 @@ func NewMongoUserStore(client *mongo.Client) *MongoUserStore {
 }
 
 type UserStore interface {
-	CreateUser(context.Context, *types.User) (*types.User, error) 
+	CreateUser(context.Context, *types.User) (*types.User, error)
+	GetUserByID(context.Context, string) (*types.User, error) 
 }
 
 func (s *MongoUserStore) CreateUser(c context.Context, user *types.User) (*types.User, error) {
@@ -37,4 +39,18 @@ func (s *MongoUserStore) CreateUser(c context.Context, user *types.User) (*types
 	user.ID = res.InsertedID.(primitive.ObjectID)
 
 	return user, nil
+}
+
+func (s *MongoUserStore) GetUserByID(ctx context.Context, id string) (*types.User, error) {
+	oid, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		return nil, err
+	}
+
+	var user types.User
+	if err := s.collection.FindOne(ctx, bson.M{"_id": oid}).Decode(&user); err != nil {
+		return nil, err
+	}
+
+	return &user, nil
 }
