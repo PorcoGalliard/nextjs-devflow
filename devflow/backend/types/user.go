@@ -68,3 +68,25 @@ func isValid(email string) bool {
 func IsValidPassword(encpw, pw string) bool {
 	return bcrypt.CompareHashAndPassword([]byte(encpw), []byte(pw)) == nil
 }
+
+func (params CreateUserParam) Validate() map[string]string {
+	errors := map[string]string{}
+
+	if len(params.FirstName) < minFirstNameLen {
+		errors["FirstName"] = fmt.Sprintf("First Name must be at least %d characters", minFirstNameLen)
+	}
+	
+	if len(params.LastName) < minLastNameLen {
+		errors["LastName"] = fmt.Sprintf("Last Name must be at least %d characters", minLastNameLen)
+	}
+
+	if !isValid(params.Email) {
+		errors["Email"] = fmt.Sprintf("Your email %s is not a valid email", params.Email)
+	}
+
+	if len(params.Password) < minPasswordLen {
+		errors["Password"] = fmt.Sprintf("Password must be at least %d characters", minPasswordLen)
+	}
+
+	return errors
+}
