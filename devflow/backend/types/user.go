@@ -39,6 +39,7 @@ type CreateUserParam struct {
 	LastName string `json:"lastName"`
 	Email string `json:"email"`
 	Password string `json:"password"`
+	JoinedAt time.Time `json:"joinedAt"`
 }
 
 type UpdateUserParam struct {
