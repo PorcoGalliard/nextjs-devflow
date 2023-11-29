@@ -11,7 +11,11 @@ type Question struct {
 	Title string `bson:"title" json:"title"`
 	Description string `bson:"description" json:"description"`
 	UserID string `bson:"userID,omitempty" json:"userID,omitempty"`
-	Tags []string `bson:"tags" json:"tags"`
+	Tags []Tag `bson:"tags" json:"tags"`
+	Views int `bson:"views" json:"views"`
+	Upvotes int `bson:"upvotes" json:"upvotes"`
+	Downvotes int `bson:"downvotes" json:"downvotes"`
+	Answers []Answer `bson:"answers" json:"answers"`
 	CreatedAt time.Time `bson:"createdAt" json:"createdAt"`
 }
 
