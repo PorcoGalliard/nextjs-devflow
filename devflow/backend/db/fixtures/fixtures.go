@@ -10,17 +10,12 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-func AddQuestion(store *db.Store, title string, desc string, userID string, tags []types.Tag, createdAt time.Time) (*types.Question) {
-	
-	oid, err := primitive.ObjectIDFromHex(userID)
-	if err != nil {
-		return nil
-	}
+func AddQuestion(store *db.Store, title string, desc string, userID primitive.ObjectID, tags []types.Tag, createdAt time.Time) (*types.Question) {
 
 	question := &types.Question{
 		Title: title,
 		Description: desc,
-		UserID: oid,
+		UserID: userID,
 		Tags: tags,
 		CreatedAt: createdAt,
 	}
