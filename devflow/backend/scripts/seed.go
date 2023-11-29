@@ -10,6 +10,7 @@ import (
 	"github.com/clerkinc/clerk-sdk-go/clerk"
 	"github.com/fullstack/dev-overflow/db"
 	"github.com/fullstack/dev-overflow/db/fixtures"
+	"github.com/fullstack/dev-overflow/types"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 
@@ -51,7 +52,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	question := fixtures.AddQuestion(store, "Bagaimana cara mengatur GOROOT", "ini adalah contoh deskripsi", clerkUser.ID, []string{"GO", "JAVA", "PYTHON"}, time.Now())
+	question := fixtures.AddQuestion(store, "Bagaimana cara mengatur GOROOT", "ini adalah contoh deskripsi", clerkUser.ID, []types.Tag{}, time.Now())
 	fmt.Println(question.ID)
 
 }
