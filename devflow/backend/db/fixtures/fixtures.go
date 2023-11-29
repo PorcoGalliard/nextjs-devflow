@@ -7,14 +7,21 @@ import (
 
 	"github.com/fullstack/dev-overflow/db"
 	"github.com/fullstack/dev-overflow/types"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-func AddQuestion(store *db.Store, title string, desc string, userID string, tags []string, createdAt time.Time) (*types.Question) {
+func AddQuestion(store *db.Store, title string, desc string, userID string, tags []types.Tag, createdAt time.Time) (*types.Question) {
+	
+	oid, err := primitive.ObjectIDFromHex(userID)
+	if err != nil {
+		return nil
+	}
+
 	question := &types.Question{
 		Title: title,
 		Description: desc,
-		UserID: userID,
-		Tags: []string(tags),
+		UserID: oid,
+		Tags: tags,
 		CreatedAt: createdAt,
 	}
 
@@ -24,4 +31,24 @@ func AddQuestion(store *db.Store, title string, desc string, userID string, tags
 	}
 
 	return insertedQuestion
+}
+
+func AddUser(store *db.Store, firstName string, lastName string, email string, encryptedPassword string) (*types.User) {
+	user, err := types.NewUserFromParams(types.CreateUserParam{
+		FirstName: firstName,
+		LastName: lastName,
+		Email: email,
+		Password: encryptedPassword,
+	})
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	insertedUser, err := store.User.CreateUser(context.Background(), user)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return insertedUser
 }
