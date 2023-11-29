@@ -45,24 +45,17 @@ export const sidebarLinks: SidebarLink[] = [
 ];
 
 export const topQuestions = [
-  { value: "Tebak aku suka sama siapa 😋", label: 1 },
-  { value: "Hmmm siapa ya", label: 2 },
-  { value: "Kamu suka Dina kan", label: 3 },
-];
-
-export const filterType = [
-  { _id: 1, value: "Newest" },
-  { _id: 2, value: "Recommended" },
-  { _id: 3, value: "Frequent" },
-  { _id: 4, value: "Unanswered" },
+  { value: "dummy 😋", label: 1 },
+  { value: "question", label: 2 },
+  { value: "example", label: 3 },
 ];
 
 export const popularTags = [
-  { _id: 1, name: "NEXT JS", totalQuestions: 5 },
-  { _id: 2, name: "REACT JS", totalQuestions: 10 },
-  { _id: 3, name: "ANGULAR JS", totalQuestions: 8 },
-  { _id: 4, name: "GOLANG", totalQuestions: 30 },
-  { _id: 5, name: "JAVA", totalQuestions: 25 },
+  { _id: "1", name: "NEXT JS", totalQuestions: 5 },
+  { _id: "2", name: "REACT JS", totalQuestions: 10 },
+  { _id: "3", name: "ANGULAR JS", totalQuestions: 8 },
+  { _id: "4", name: "GOLANG", totalQuestions: 30 },
+  { _id: "5", name: "JAVA", totalQuestions: 25 },
 ];
 
 export const BADGE_CRITERIA = {
