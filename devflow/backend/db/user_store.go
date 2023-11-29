@@ -42,13 +42,8 @@ func (s *MongoUserStore) CreateUser(c context.Context, user *types.User) (*types
 }
 
 func (s *MongoUserStore) GetUserByID(ctx context.Context, id string) (*types.User, error) {
-	oid, err := primitive.ObjectIDFromHex(id)
-	if err != nil {
-		return nil, err
-	}
-
 	var user types.User
-	if err := s.collection.FindOne(ctx, bson.M{"_id": oid}).Decode(&user); err != nil {
+	if err := s.collection.FindOne(ctx, bson.M{"clerkID": id}).Decode(&user); err != nil {
 		return nil, err
 	}
 
