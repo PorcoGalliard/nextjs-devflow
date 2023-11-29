@@ -11,7 +11,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-const QuestionColl = "questions"
+const QUESTIONCOLL = "questions"
 
 type Map map[string]any
 
@@ -28,7 +28,7 @@ func NewMongoQuestionStore(client *mongo.Client) *MongoQuestionStore {
 	var mongoenvdbname = os.Getenv("MONGO_DB_NAME")
 	return &MongoQuestionStore{
 		client: client,
-		coll: client.Database(mongoenvdbname).Collection(QuestionColl),
+		coll: client.Database(mongoenvdbname).Collection(QUESTIONCOLL),
 	}
 }
 
