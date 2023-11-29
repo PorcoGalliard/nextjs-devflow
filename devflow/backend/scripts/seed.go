@@ -43,8 +43,10 @@ func main() {
 	}
 
 	questionStore := db.NewMongoQuestionStore(mongoClient)
+	userStore := db.NewMongoUserStore(mongoClient)
 	store := &db.Store{
 		Question: questionStore,
+		User: userStore,
 	}
 
 	clerkUser, err := clerkClient.Users().Read("user_2XUKLyYOZGc5jlzwdFMjyXlHrOw")
@@ -53,6 +55,8 @@ func main() {
 	}
 
 	question := fixtures.AddQuestion(store, "Bagaimana cara mengatur GOROOT", "ini adalah contoh deskripsi", clerkUser.ID, []types.Tag{}, time.Now())
-	fmt.Println(question.ID)
+	fmt.Println("Pertanyaan berhasil ditambahkan, berikut adalah ID pertanyaan", question.ID)
 
+	user := fixtures.AddUser(store, "Higuruma", "Hiromu", "higuruma@gmail.com", "higurumahiromu123")
+	fmt.Println("User berhasil ditambahkan, berikut adalah ID user", user.ID)
 }
