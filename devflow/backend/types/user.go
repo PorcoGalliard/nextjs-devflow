@@ -1,9 +1,20 @@
 package types
 
 import (
+	"fmt"
 	"time"
 
+	"net/mail"
+
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"golang.org/x/crypto/bcrypt"
+)
+
+const (
+	bcryptCost = 12
+	minFirstNameLen = 2
+	minLastNameLen = 2
+	minPasswordLen = 7
 )
 
 type User struct {
@@ -33,4 +44,18 @@ type CreateUserParam struct {
 type UpdateUserParam struct {
 	FirstName string `json:"firstName"`
 	LastName string `json:"lastName"`
+}
+
+func NewUserFromParams(params CreateUserParam) (*User, error) {
+	encpw, err := bcrypt.GenerateFromPassword([]byte(params.Password), bcryptCost)
+	if err != nil {
+		return nil, err
+	}
+
+	return &User{
+		FirstName: params.FirstName,
+		LastName: params.LastName,
+		Email: params.Email,
+		EncryptedPassword: string(encpw),
+	}, nil
 }
