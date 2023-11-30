@@ -29,9 +29,8 @@ type Question struct {
 type AskQuestionParams struct {
 	Title string `json:"title"`
 	Description string `json:"description"`
-	UserID primitive.ObjectID `json:"useID"`
-	Tags []Tag `json:"tags"`
-	CreatedAt time.Time `json:"createdAt"`
+	ClerkID string `json:"clerkID"`
+	Tags []string `json:"tags"`
 }
 
 func (params AskQuestionParams) Validate() map[string]string {
