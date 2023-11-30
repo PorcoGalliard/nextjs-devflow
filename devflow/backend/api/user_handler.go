@@ -1,6 +1,7 @@
 package api
 
 import (
+	"errors"
 	"os"
 	"time"
 
@@ -9,6 +10,7 @@ import (
 	"github.com/fullstack/dev-overflow/types"
 	"github.com/gofiber/fiber/v2"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
 type UserHandler struct {
@@ -27,17 +29,17 @@ func (h *UserHandler) HandleSignUp(c *fiber.Ctx) error {
 
 	clerkClient, err := clerk.NewClient(apiKey)
 	if err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": err.Error()})
+		return ErrBadRequest()
 	}
 
 	session, err := clerkClient.Sessions().Verify(sessionToken, "")
 	if err != nil {
-		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{"error": err.Error()})
+		return ErrUnauthorized()
 	}
 	
 	clerkUser, err := clerkClient.Users().Read(session.ID)
 	if err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": err.Error()})
+		return ErrInvalidID()
 	}
 
 	userOid := primitive.NewObjectID()
@@ -50,8 +52,23 @@ func (h *UserHandler) HandleSignUp(c *fiber.Ctx) error {
 
 	insertedUser, err := h.userStore.CreateUser(c.Context(), user)
 	if err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": err.Error()})
+		return ErrBadRequest()
 	}
 
 	return c.JSON(fiber.Map{"message": "User berhasil ditambahkan, ID nya adalah =>" + insertedUser.ClerkID})
+}
+
+func (h *UserHandler) HandleGetUserByID(ctx *fiber.Ctx) error {
+	var (
+		id = ctx.Params("clerkID")
+	) 
+
+	user, err := h.userStore.GetUserByID(ctx.Context(), id)
+	if err != nil {
+		if errors.Is(err, mongo.ErrNoDocuments) {
+			return ErrResourceNotFound(id)
+		}
+	}
+
+	return ctx.JSON(user)
 }
