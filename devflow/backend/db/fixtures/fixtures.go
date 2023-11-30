@@ -28,10 +28,11 @@ func AddQuestion(store *db.Store, title string, desc string, userID primitive.Ob
 	return insertedQuestion
 }
 
-func AddUser(store *db.Store, firstName string, lastName string, email string, encryptedPassword string) (*types.User) {
+func AddUser(store *db.Store, firstName string, lastName string, clerkID string, email string, encryptedPassword string) (*types.User) {
 	user, err := types.NewUserFromParams(types.CreateUserParam{
 		FirstName: firstName,
 		LastName: lastName,
+		ClerkID: clerkID,
 		Email: email,
 		Password: encryptedPassword,
 	})
