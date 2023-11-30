@@ -42,7 +42,8 @@ func main() {
 		User: userStore,
 	}
 
-	user := fixtures.AddUser(store, "Higuruma", "Hiromu", "higuruma@gmail.com", "higurumahiromu123")
+
+	user := fixtures.AddUser(store, "Higuruma", "Hiromi", "12345678", "higuruma@gmail.com", "higurumahiromu123")
 	fmt.Println("User berhasil ditambahkan, berikut adalah ID user =>", user.ID)
 
 	question := fixtures.AddQuestion(store, "Bagaimana cara mengatur GOROOT", "ini adalah contoh deskripsi", user.ID, []types.Tag{}, time.Now())
