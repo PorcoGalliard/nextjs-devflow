@@ -16,7 +16,7 @@ const QUESTIONCOLL = "questions"
 type Map map[string]any
 
 type Dropper interface {
-	Drop(context.Context)
+	Drop(context.Context) error
 }
 
 type MongoQuestionStore struct {
@@ -33,6 +33,7 @@ func NewMongoQuestionStore(client *mongo.Client) *MongoQuestionStore {
 }
 
 type QuestionStore interface {
+	Dropper
 	GetQuestionByID(context.Context, string) (*types.Question, error)
 	AskQuestion(context.Context, *types.Question) (*types.Question, error)
 }
@@ -43,8 +44,14 @@ func (s *MongoQuestionStore) Drop(ctx context.Context) error {
 }
 
 func (s *MongoQuestionStore) GetQuestionByID(ctx context.Context, id string) (*types.Question, error) {
+
+	oid, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		return nil, err
+	}
+
 	var question types.Question
-	if err := s.coll.FindOne(ctx, bson.M{"_id":id}).Decode(&question); err != nil {
+	if err := s.coll.FindOne(ctx, bson.M{"_id":oid}).Decode(&question); err != nil {
 		return nil , err
 	}
 
