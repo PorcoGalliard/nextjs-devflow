@@ -37,6 +37,7 @@ type User struct {
 type CreateUserParam struct {
 	FirstName string `json:"firstName"`
 	LastName string `json:"lastName"`
+	ClerkID string `json:"clerkID"`
 	Email string `json:"email"`
 	Password string `json:"password"`
 	JoinedAt time.Time `json:"joinedAt"`
@@ -56,6 +57,7 @@ func NewUserFromParams(params CreateUserParam) (*User, error) {
 	return &User{
 		FirstName: params.FirstName,
 		LastName: params.LastName,
+		ClerkID: params.ClerkID,
 		Email: params.Email,
 		EncryptedPassword: string(encpw),
 	}, nil
