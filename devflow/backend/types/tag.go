@@ -14,3 +14,11 @@ type Tag struct {
 	Followers []User `bson:"followers" json:"followers"`
 	CreatedAt time.Time `bson:"createdAt" json:"createdAt"`
 }
+
+type CreateTagParams struct {
+	Name string `json:"name"`
+}
+
+type UpdateTagParams struct {
+	
+}
