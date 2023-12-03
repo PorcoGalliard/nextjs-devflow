@@ -68,6 +68,18 @@ func (h *TagHandler) HandleCreateTag(ctx *fiber.Ctx) error {
 }
 
 func (h *TagHandler) HandleUpdateTag(ctx *fiber.Ctx) error {
-	// TODO:
-	return nil
+	var (
+		params *types.UpdateTagQuestionAndFollowers
+		oid = ctx.Params("_id")
+	)
+	if err := ctx.BodyParser(&params); err != nil {
+		return ErrBadRequest()
+	}
+
+	filter := db.Map{"_id": oid}
+	if err := h.tagStore.UpdateTag(ctx.Context(), filter, params); err != nil {
+		return ErrBadRequest()
+	}
+
+	return ctx.JSON(fiber.Map{"message": "Tag updated successfully"})
 }
