@@ -19,6 +19,7 @@ type CreateTagParams struct {
 	Name string `json:"name"`
 }
 
-type UpdateTagParams struct {
-	
+type UpdateTagQuestionAndFollowers struct {
+	Questions []Question `json:"questions"`
+	Followers []User `json:"followers"`
 }
