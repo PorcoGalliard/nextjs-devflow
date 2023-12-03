@@ -20,6 +20,6 @@ type CreateTagParams struct {
 }
 
 type UpdateTagQuestionAndFollowers struct {
-	Questions []Question `json:"questions"`
-	Followers []User `json:"followers"`
+	Questions []primitive.ObjectID `json:"questions"`
+	Followers []primitive.ObjectID `json:"followers"`
 }
