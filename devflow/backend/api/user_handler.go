@@ -47,7 +47,7 @@ func (h *UserHandler) HandleSignUp(c *fiber.Ctx) error {
 	user := &types.User{
 		ID: userOid,
 		ClerkID: clerkUser.ID,
-		JoinedAt: time.Now(),
+		JoinedAt: time.Now().UTC(),
 	}
 
 	insertedUser, err := h.userStore.CreateUser(c.Context(), user)
