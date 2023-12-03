@@ -48,3 +48,16 @@ func AddUser(store *db.Store, firstName string, lastName string, clerkID string,
 
 	return insertedUser
 }
+
+func AddTag(store *db.Store, name string) (*types.Tag) {
+	tag := &types.Tag{
+		Name: name,
+	}
+
+	insertedTag, err := store.Tag.CreateTag(context.Background(), tag)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return insertedTag
+}
