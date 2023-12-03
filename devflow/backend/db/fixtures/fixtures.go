@@ -52,6 +52,9 @@ func AddUser(store *db.Store, firstName string, lastName string, clerkID string,
 func AddTag(store *db.Store, name string) (*types.Tag) {
 	tag := &types.Tag{
 		Name: name,
+		Questions: []primitive.ObjectID{},
+		Followers: []primitive.ObjectID{},
+		CreatedAt: time.Now().UTC(),
 	}
 
 	insertedTag, err := store.Tag.CreateTag(context.Background(), tag)
@@ -60,4 +63,17 @@ func AddTag(store *db.Store, name string) (*types.Tag) {
 	}
 
 	return insertedTag
+}
+
+func UpdateTag(store *db.Store, tagID primitive.ObjectID, update *types.UpdateTagQuestionAndFollowers) (*types.Tag, error) {
+	if err := store.Tag.UpdateTag(context.Background(), db.Map{"_id":tagID}, update); err != nil {
+		log.Fatal(err)
+	}
+	
+	realTag, err := store.Tag.GetTagByID(context.Background(), tagID.Hex())
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return realTag, nil
 }
