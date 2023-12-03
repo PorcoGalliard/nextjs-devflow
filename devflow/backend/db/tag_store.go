@@ -2,6 +2,7 @@ package db
 
 import (
 	"context"
+	"errors"
 	"os"
 
 	"github.com/fullstack/dev-overflow/types"
@@ -71,7 +72,23 @@ func (s *MongoTagStore) CreateTag(c context.Context, tag *types.Tag) (*types.Tag
 }
 
 func (s *MongoTagStore) UpdateTag(ctx context.Context, filter Map, update *types.UpdateTagQuestionAndFollowers) error {
-	_, err := s.collection.UpdateOne(ctx, filter, update)
+
+	oid, ok := filter["_id"].(primitive.ObjectID)
+	if !ok {
+		return errors.New("filter[_id] is not a primitive.ObjectID")
+	}
+
+	filter["_id"] = oid
+
+
+	updateDoc := bson.M{
+		"$push": bson.M{
+			"questions": bson.M{"$each": update.Questions},
+			"followers": bson.M{"$each": update.Followers},
+		},
+	}
+
+	_, err := s.collection.UpdateOne(ctx, filter, updateDoc)
 	if err != nil {
 		return err
 	}
