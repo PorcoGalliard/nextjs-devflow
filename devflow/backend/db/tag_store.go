@@ -30,6 +30,7 @@ type TagStore interface {
 	CreateTag(context.Context, *types.Tag) (*types.Tag, error)
 	GetTagByID(context.Context, string) (*types.Tag, error)
 	GetTagByName(context.Context, string) (*types.Tag, error)
+	UpdateTag(context.Context, Map, *types.UpdateTagQuestionAndFollowers) error
 }
 
 func (s *MongoTagStore) GetTagByID(ctx context.Context, id string) (*types.Tag, error) {
@@ -67,4 +68,13 @@ func (s *MongoTagStore) CreateTag(c context.Context, tag *types.Tag) (*types.Tag
 	tag.ID = res.InsertedID.(primitive.ObjectID)
 
 	return tag, nil
+}
+
+func (s *MongoTagStore) UpdateTag(ctx context.Context, filter Map, update *types.UpdateTagQuestionAndFollowers) error {
+	_, err := s.collection.UpdateOne(ctx, filter, update)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
