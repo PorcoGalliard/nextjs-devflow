@@ -40,7 +40,6 @@ type CreateUserParam struct {
 	ClerkID string `json:"clerkID"`
 	Email string `json:"email"`
 	Password string `json:"password"`
-	JoinedAt time.Time `json:"joinedAt"`
 }
 
 type UpdateUserParam struct {
