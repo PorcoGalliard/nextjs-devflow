@@ -103,8 +103,17 @@ func (h *QuestionHandler) HandleAskQuestion(ctx *fiber.Ctx) error {
 		}
 
 	for _, tag := range tags {
-		tag.Questions = append(tag.Questions, insertedQuestion.ID)
-		tag.Followers = append(tag.Followers, user.ID)
+		tagFromDB, err := h.tagStore.GetTagByID(ctx.Context(), tag.ID.Hex())
+		if err != nil {
+			return ErrBadRequest()
+		}
+
+		tagFromDB.Questions = append(tagFromDB.Questions, insertedQuestion.ID)
+		tagFromDB.Followers = append(tagFromDB.Followers, user.ID)
+
+		if err := h.tagStore.UpdateTag(ctx.Context(), db.Map{"_id":tag.ID}, &types.UpdateTagQuestionAndFollowers{Questions: tagFromDB.Questions, Followers: tagFromDB.Followers}); err != nil {
+			return ErrBadRequest()
+		}
 	}
 
 	return ctx.JSON(insertedQuestion)
