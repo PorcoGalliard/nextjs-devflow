@@ -22,6 +22,7 @@ type Dropper interface {
 type MongoQuestionStore struct {
 	client *mongo.Client
 	coll *mongo.Collection
+	TagStore
 }
 
 func NewMongoQuestionStore(client *mongo.Client) *MongoQuestionStore {
@@ -63,6 +64,14 @@ func (s *MongoQuestionStore) AskQuestion(ctx context.Context, question *types.Qu
 	if err != nil {
 		return nil, err
 	}
+
 	question.ID = res.InsertedID.(primitive.ObjectID)
+
+	for _, tag := range question.Tags {
+		if err := s.TagStore.UpdateTag(ctx, Map{"_id": tag}, &types.UpdateTagQuestionAndFollowers{Questions: question.ID, Followers: question.UserID}); err != nil {
+			return nil, err
+		}
+	}
+
 	return question, nil
 }
