@@ -28,16 +28,19 @@ func main() {
 	} 
 
 	var (
-		questionStore = db.NewMongoQuestionStore(client)
 		userStore = db.NewMongoUserStore(client)
+		tagStore = db.NewMongoTagStore(client)
+		questionStore = db.NewMongoQuestionStore(client, tagStore)
 
 		store = &db.Store{
 			Question: questionStore,
 			User: userStore,
+			Tag: tagStore,
 		}
 
-		questionHandler = api.NewQuestionHandler(store.Question, store.User)
+		questionHandler = api.NewQuestionHandler(store.Question, store.User, store.Tag)
 		userHandler = api.NewUserHandler(store.User)
+		tagHandler = api.NewTagHandler(store.Tag)
 		app = fiber.New(config)
 		auth = app.Group("/api")
 		apiv1 = app.Group("/api/v1")
@@ -47,10 +50,17 @@ func main() {
 	// Question Handler
 	apiv1.Get("/question/:_id", questionHandler.HandleGetQuestionByID)
 	apiv1.Post("/ask-question", questionHandler.HandleAskQuestion)
+	apiv1.Get("/question", questionHandler.HandleGetQuestions)
 
 	// User Handler
 	auth.Post("/sign-up", userHandler.HandleSignUp)
 	apiv1.Get("/user/:clerkID", userHandler.HandleGetUserByID)
+
+	// Tag Handler
+	apiv1.Get("/tag/:_id", tagHandler.HandleGetTagByID)
+	apiv1.Post("/tag", tagHandler.HandleCreateTag)
+	apiv1.Get("/tag/:name", tagHandler.HandleGetTagByName)
+	apiv1.Put("/tag/:_id", tagHandler.HandleUpdateTag)
 	
 
 	listenAddr := os.Getenv("HTTP_LISTEN_ADDRESS")
