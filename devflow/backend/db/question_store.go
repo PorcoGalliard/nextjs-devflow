@@ -25,11 +25,12 @@ type MongoQuestionStore struct {
 	TagStore
 }
 
-func NewMongoQuestionStore(client *mongo.Client) *MongoQuestionStore {
+func NewMongoQuestionStore(client *mongo.Client, tagStore TagStore) *MongoQuestionStore {
 	var mongoenvdbname = os.Getenv("MONGO_DB_NAME")
 	return &MongoQuestionStore{
 		client: client,
 		coll: client.Database(mongoenvdbname).Collection(QUESTIONCOLL),
+		TagStore: tagStore,
 	}
 }
 
