@@ -37,6 +37,7 @@ func NewMongoQuestionStore(client *mongo.Client, tagStore TagStore) *MongoQuesti
 type QuestionStore interface {
 	Dropper
 	GetQuestionByID(context.Context, string) (*types.Question, error)
+	GetQuestions(context.Context) ([]*types.Question, error)
 	AskQuestion(context.Context, *types.Question) (*types.Question, error)
 }
 
@@ -58,6 +59,25 @@ func (s *MongoQuestionStore) GetQuestionByID(ctx context.Context, id string) (*t
 	}
 
 	return &question, nil
+}
+
+func (s *MongoQuestionStore) GetQuestions(ctx context.Context) ([]*types.Question, error) {
+	var questions []*types.Question
+	cur, err := s.coll.Find(ctx, bson.M{})
+	if err != nil {
+		return nil, err
+	}
+	defer cur.Close(ctx)
+
+	for cur.Next(ctx) {
+		var question types.Question
+		if err := cur.Decode(&question); err != nil {
+			return nil, err
+		}
+		questions = append(questions, &question)
+	}
+
+	return questions, nil
 }
 
 func (s *MongoQuestionStore) AskQuestion(ctx context.Context, question *types.Question) (*types.Question, error) {
