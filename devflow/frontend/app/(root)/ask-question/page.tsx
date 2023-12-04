@@ -1,27 +1,41 @@
+"use client";
+
 import Question from "@/components/forms/Question";
-import { auth } from "@clerk/nextjs";
+import User from "@/database/user.model";
 import axios from "axios";
-import { redirect } from "next/navigation";
-import React from "react";
+import { useRouter } from "next/navigation";
+import React, { useEffect, useState } from "react";
 
-const page = () => {
-  const { userId } = auth();
+const Page = () => {
+  const router = useRouter();
+  const userID = "12345678";
+  const [user, setUser] = useState<User | null>(null);
 
-  if (!userId) redirect("/sign-in");
+  useEffect(() => {
+    if (!userID) router.push("/sign-in");
 
-  axios.get(`http://localhost:5000/api/v1/user/${userId}`).then((response) => {
-    const mongoUser = response.data;
-    console.log(mongoUser);
-  });
+    const fetchUser = async () => {
+      const response = await axios.get(
+        `http://localhost:5000/api/v1/user/${userID}`
+      );
+      const mongoUser = response.data;
+      console.log(mongoUser);
+      setUser(mongoUser);
+    };
+
+    fetchUser();
+  }, []);
+
+  if (!user) return <div>Loading...</div>;
 
   return (
     <div>
       <h1 className="h1-bold text-dark100_light900">Ask a Question</h1>
       <div className="mt-9">
-        <Question />
+        <Question mongoUserId={JSON.stringify(user.clerkID)} />
       </div>
     </div>
   );
 };
 
-export default page;
+export default Page;
