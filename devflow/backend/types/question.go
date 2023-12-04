@@ -14,15 +14,15 @@ const (
 )
 
 type Question struct {
-	ID primitive.ObjectID `bson:"_id,omitempty" json:"_id,omitempty"`
+	ID primitive.ObjectID `bson:"_id,omitempty" json:"id,omitempty"`
 	Title string `bson:"title" json:"title"`
 	Description string `bson:"description" json:"description"`
 	UserID primitive.ObjectID `bson:"userID,omitempty" json:"userID,omitempty"`
-	Tags []Tag `bson:"tags" json:"tags"`
+	Tags []primitive.ObjectID `bson:"tags" json:"tags"`
 	Views int `bson:"views" json:"views"`
-	Upvotes int `bson:"upvotes" json:"upvotes"`
-	Downvotes int `bson:"downvotes" json:"downvotes"`
-	Answers []Answer `bson:"answers" json:"answers"`
+	Upvotes []primitive.ObjectID `bson:"upvotes" json:"upvotes"`
+	Downvotes []primitive.ObjectID `bson:"downvotes" json:"downvotes"`
+	Answers []primitive.ObjectID `bson:"answers" json:"answers"`
 	CreatedAt time.Time `bson:"createdAt" json:"createdAt"`
 }
 
