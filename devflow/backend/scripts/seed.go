@@ -38,9 +38,9 @@ func main() {
 		log.Fatal(err)
 	}
 
-	questionStore := db.NewMongoQuestionStore(mongoClient)
 	userStore := db.NewMongoUserStore(mongoClient)
 	tagStore := db.NewMongoTagStore(mongoClient)
+	questionStore := db.NewMongoQuestionStore(mongoClient, tagStore)
 	store := &db.Store{
 		Question: questionStore,
 		User: userStore,
@@ -51,25 +51,9 @@ func main() {
 	user := fixtures.AddUser(store, "Higuruma", "Hiromi", "12345678", "higuruma@gmail.com", "higurumahiromu123")
 	fmt.Println("User berhasil ditambahkan, berikut adalah ID user =>", user.ID)
 
-	user2 := fixtures.AddUser(store, "Yuuta", "Okkotsu", "87654321", "okkotsu@gmail.com", "yuutaokkotsu123")
-	fmt.Println("User berhasil ditambahkan, berikut adalah ID user =>", user2.ID)
+	tag := fixtures.AddTag(store, "Go")
+	fmt.Println("Tag berhasil ditambahkan, berikut adalah ID tag =>", tag.ID)
 
-	user3 := fixtures.AddUser(store, "Geto", "Suguru", "55554444", "getosuguru@gmail.com", "getosugu123")
-	fmt.Println("User berhasil ditambahkan, berikut adalah ID user =>", user3.ID)
-
-	tag := fixtures.AddTag(store, "Golang")
-
-	taggg := make([]primitive.ObjectID, 0)
-	taggg = append(taggg, tag.ID)
-	question := fixtures.AddQuestion(store, "Bagaimana cara mengatur GOROOT", "ini adalah contoh deskripsi", user.ID, taggg, time.Now().UTC())
+	question := fixtures.AddQuestion(store, "Bagaimana cara menggunakan Go?", "Saya baru belajar Go dan ingin tahu lebih banyak.", user.ID, []primitive.ObjectID{tag.ID}, time.Now())
 	fmt.Println("Pertanyaan berhasil ditambahkan, berikut adalah ID pertanyaan =>", question.ID)
-
-	// questions := []primitive.ObjectID{question.ID, question2.ID}
-	// followers := []primitive.ObjectID{user.ID}
-
-	// updatedTag, err := fixtures.UpdateTag(store, tag.ID, &types.UpdateTagQuestionAndFollowers{Questions: questions, Followers: followers})
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
-	// fmt.Println("Tag berhasil diupdate =>", updatedTag.ID)
 }
