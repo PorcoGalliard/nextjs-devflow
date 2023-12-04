@@ -2,6 +2,7 @@ package api
 
 import (
 	"errors"
+	"log"
 	"time"
 
 	"github.com/fullstack/dev-overflow/db"
@@ -43,8 +44,8 @@ func (h *QuestionHandler) HandleGetQuestionByID(ctx *fiber.Ctx) error {
 }
 
 func (h *QuestionHandler) HandleAskQuestion(ctx *fiber.Ctx) error {
-	var params *types.AskQuestionParams
-	// fmt.Println(string(ctx.Body()))
+	var params types.AskQuestionParams
+
 	if err := ctx.BodyParser(&params); err != nil {
 		return ErrBadRequest()
 	}
@@ -73,6 +74,9 @@ func (h *QuestionHandler) HandleAskQuestion(ctx *fiber.Ctx) error {
 			if errors.Is(err, mongo.ErrNoDocuments) {
 				tag = &types.Tag{
 					Name: tagName,
+					Questions: []primitive.ObjectID{},
+					Followers: []primitive.ObjectID{},
+					CreatedAt: time.Now().UTC(),
 				}
 
 				insertedTag, err := h.tagStore.CreateTag(ctx.Context(), tag)
@@ -91,12 +95,16 @@ func (h *QuestionHandler) HandleAskQuestion(ctx *fiber.Ctx) error {
 		Description: params.Description,
 		UserID: user.ID,
 		Tags: tags,
+		Upvotes: []primitive.ObjectID{},
+		Downvotes: []primitive.ObjectID{},
+		Answers: []primitive.ObjectID{},
 		CreatedAt: time.Now().UTC(),
 	}
 
 
 	insertedQuestion, err := h.questionStore.AskQuestion(ctx.Context(), question)
 	if err != nil {
+		log.Println(err)
 			return ErrBadRequest()
 		}
 
