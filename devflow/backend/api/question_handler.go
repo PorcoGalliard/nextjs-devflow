@@ -2,13 +2,13 @@ package api
 
 import (
 	"errors"
-	"fmt"
 	"time"
 
 	"github.com/fullstack/dev-overflow/db"
 	"github.com/fullstack/dev-overflow/types"
 	"github.com/fullstack/dev-overflow/utils"
 	"github.com/gofiber/fiber/v2"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
@@ -43,9 +43,8 @@ func (h *QuestionHandler) HandleGetQuestionByID(ctx *fiber.Ctx) error {
 }
 
 func (h *QuestionHandler) HandleAskQuestion(ctx *fiber.Ctx) error {
-	var params types.AskQuestionParams
+	var params *types.AskQuestionParams
 	// fmt.Println(string(ctx.Body()))
-	// fmt.Println(params)
 	if err := ctx.BodyParser(&params); err != nil {
 		return ErrBadRequest()
 	}
@@ -66,7 +65,7 @@ func (h *QuestionHandler) HandleAskQuestion(ctx *fiber.Ctx) error {
 		}
 	}
 
-	tags := make([]types.Tag, len(params.Tags))
+	tags := make([]primitive.ObjectID, len(params.Tags))
 	for i, tagName := range params.Tags {
 
 		tag, err := h.tagStore.GetTagByName(ctx.Context(), tagName)
@@ -84,7 +83,7 @@ func (h *QuestionHandler) HandleAskQuestion(ctx *fiber.Ctx) error {
 				tag = insertedTag
 			} 
 		}
-		tags[i] = *tag
+		tags[i] = *&tag.ID
 	}
 
 	question := &types.Question{
@@ -97,24 +96,9 @@ func (h *QuestionHandler) HandleAskQuestion(ctx *fiber.Ctx) error {
 
 
 	insertedQuestion, err := h.questionStore.AskQuestion(ctx.Context(), question)
-	fmt.Println(insertedQuestion)
 	if err != nil {
 			return ErrBadRequest()
 		}
-
-	for _, tag := range tags {
-		tagFromDB, err := h.tagStore.GetTagByID(ctx.Context(), tag.ID.Hex())
-		if err != nil {
-			return ErrBadRequest()
-		}
-
-		tagFromDB.Questions = append(tagFromDB.Questions, insertedQuestion.ID)
-		tagFromDB.Followers = append(tagFromDB.Followers, user.ID)
-
-		if err := h.tagStore.UpdateTag(ctx.Context(), db.Map{"_id":tag.ID}, &types.UpdateTagQuestionAndFollowers{Questions: tagFromDB.Questions, Followers: tagFromDB.Followers}); err != nil {
-			return ErrBadRequest()
-		}
-	}
 
 	return ctx.JSON(insertedQuestion)
 }
