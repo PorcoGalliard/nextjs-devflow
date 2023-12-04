@@ -43,6 +43,15 @@ func (h *QuestionHandler) HandleGetQuestionByID(ctx *fiber.Ctx) error {
 	return ctx.JSON(question)
 }
 
+func (h *QuestionHandler) HandleGetQuestions(ctx *fiber.Ctx) error {
+	questions, err := h.questionStore.GetQuestions(ctx.Context())
+	if err != nil {
+		return ErrResourceNotFound("question")
+	}
+
+	return ctx.JSON(questions)
+}
+
 func (h *QuestionHandler) HandleAskQuestion(ctx *fiber.Ctx) error {
 	var params types.AskQuestionParams
 
