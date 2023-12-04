@@ -2,6 +2,7 @@ package api
 
 import (
 	"errors"
+	"time"
 
 	"github.com/fullstack/dev-overflow/db"
 	"github.com/fullstack/dev-overflow/types"
@@ -57,6 +58,7 @@ func (h *TagHandler) HandleCreateTag(ctx *fiber.Ctx) error {
 
 	tag := &types.Tag{
 		Name: params.Name,
+		CreatedAt: time.Now().UTC(),
 	}
 
 	tag, err := h.tagStore.CreateTag(ctx.Context(), tag)
