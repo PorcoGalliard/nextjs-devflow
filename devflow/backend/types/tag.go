@@ -7,7 +7,7 @@ import (
 )
 
 type Tag struct {
-	ID primitive.ObjectID `bson:"_id,omitempty" json:"_id,omitempty"`
+	ID primitive.ObjectID `bson:"_id,omitempty" json:"id,omitempty"`
 	Description string `bson:"description" json:"description"`
 	Name string `bson:"name" json:"name"`
 	Questions []primitive.ObjectID `bson:"questions" json:"questions"`
@@ -20,6 +20,6 @@ type CreateTagParams struct {
 }
 
 type UpdateTagQuestionAndFollowers struct {
-	Questions []primitive.ObjectID `json:"questions"`
-	Followers []primitive.ObjectID `json:"followers"`
+	Questions primitive.ObjectID `json:"questions"`
+	Followers primitive.ObjectID `json:"followers"`
 }
