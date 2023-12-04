@@ -59,6 +59,7 @@ func NewUserFromParams(params CreateUserParam) (*User, error) {
 		ClerkID: params.ClerkID,
 		Email: params.Email,
 		EncryptedPassword: string(encpw),
+		JoinedAt: time.Now().UTC(),
 	}, nil
 }
 
