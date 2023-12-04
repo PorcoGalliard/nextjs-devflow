@@ -6,6 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { Button } from "@/components/ui/button";
+import axios from "axios";
 import {
   Form,
   FormControl,
@@ -19,12 +20,19 @@ import { Input } from "@/components/ui/input";
 import { QuestionsSchema } from "@/lib/validation";
 import { Badge } from "../ui/badge";
 import Image from "next/image";
+import { useRouter, usePathname } from "next/navigation";
 
-const type:any = 'create'
+const type: any = "create";
 
-const Question = () => {
+interface Props {
+  mongoUserId: string;
+}
+
+const Question = ({ mongoUserId }: Props) => {
   const editorRef = useRef(null);
-  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const router = useRouter();
+  const pathname = usePathname();
 
   //   1. Define your form.
   const form = useForm<z.infer<typeof QuestionsSchema>>({
@@ -37,17 +45,31 @@ const Question = () => {
   });
 
   // 2. Define a submit handler.
-  function onSubmit(values: z.infer<typeof QuestionsSchema>) {
+  async function onSubmit(values: z.infer<typeof QuestionsSchema>) {
     // Do something with the form values.
     // ✅ This will be type-safe and validated.
-    setIsSubmitting(true)
+    setIsSubmitting(true);
 
     try {
-        // 
+      //
+      const url = "http://localhost:5000/api/v1/ask-question";
+
+      const data = {
+        title: values.title,
+        description: values.explanation,
+        tags: values.tags,
+        clerkID: JSON.parse(mongoUserId),
+      };
+
+      const response = await axios.post(url, data);
+      console.log(response.data);
+
+      router.push("/");
+    
     } catch (error) {
-        // 
+      console.log(error);
     } finally {
-        setIsSubmitting(false)
+      setIsSubmitting(false);
     }
   }
 
@@ -127,6 +149,8 @@ const Question = () => {
                 <Editor
                   apiKey={process.env.NEXT_PUBLIC_TINY_EDITOR_API_KEY}
                   onInit={(evt, editor) => (editorRef.current = editor)}
+                  onBlur={field.onBlur}
+                  onEditorChange={(content) => field.onChange(content)}
                   initialValue=""
                   init={{
                     height: 350,
@@ -211,17 +235,17 @@ const Question = () => {
             </FormItem>
           )}
         />
-        <Button type="submit" className="primary-gradient w-fit !text-light-900" disabled={isSubmitting}>
-            {isSubmitting ? (
-                <>
-                    {type === 'edit' ? 'Editing...' : 'Posting...' }
-                </>
-            ): (
-                <>
-                    {type === 'edit' ? 'Edit Question' : 'Ask a Question'}
-                </>
-            )}
-            </Button>
+        <Button
+          type="submit"
+          className="primary-gradient !text-light-900 w-fit"
+          disabled={isSubmitting}
+        >
+          {isSubmitting ? (
+            <>{type === "edit" ? "Editing..." : "Posting..."}</>
+          ) : (
+            <>{type === "edit" ? "Edit Question" : "Ask a Question"}</>
+          )}
+        </Button>
       </form>
     </Form>
   );
