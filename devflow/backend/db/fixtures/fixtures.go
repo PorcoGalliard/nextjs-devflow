@@ -10,7 +10,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-func AddQuestion(store *db.Store, title string, desc string, userID primitive.ObjectID, tags []types.Tag, createdAt time.Time) (*types.Question) {
+func AddQuestion(store *db.Store, title string, desc string, userID primitive.ObjectID, tags []primitive.ObjectID, createdAt time.Time) (*types.Question) {
 
 	question := &types.Question{
 		Title: title,
