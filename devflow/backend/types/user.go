@@ -18,7 +18,7 @@ const (
 )
 
 type User struct {
-	ID primitive.ObjectID `bson:"_id,omitempty" json:"_id,omitempty"`
+	ID primitive.ObjectID `bson:"_id,omitempty" json:"id,omitempty"`
 	ClerkID string `bson:"clerkID" json:"clerkID"`
 	FirstName string `bson:"firstName" json:"firstName"`
 	LastName string `bson:"lastName" json:"lastName"`
@@ -30,7 +30,7 @@ type User struct {
 	PortfolioWebsite *string `bson:"portfolioWebsite" json:"portfolioWebsite"`
 	IsAdmin bool `bson:"isAdmin" json:"isAdmin"`
 	Reputation *int `bson:"reputation" json:"reputation"`
-	Saved []Question `bson:"saved" json:"saved"`
+	Saved []primitive.ObjectID `bson:"saved" json:"saved"`
 	JoinedAt time.Time `bson:"joinedAt" json:"joinedAt"`
 }
 
