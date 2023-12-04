@@ -73,7 +73,7 @@ func (s *MongoTagStore) CreateTag(c context.Context, tag *types.Tag) (*types.Tag
 
 func (s *MongoTagStore) UpdateTag(ctx context.Context, filter Map, update *types.UpdateTagQuestionAndFollowers) error {
 
-	oid, ok := filter["_id"].(primitive.ObjectID)
+	oid, ok := filter["_id"]
 	if !ok {
 		return errors.New("filter[_id] is not a primitive.ObjectID")
 	}
@@ -83,8 +83,8 @@ func (s *MongoTagStore) UpdateTag(ctx context.Context, filter Map, update *types
 
 	updateDoc := bson.M{
 		"$push": bson.M{
-			"questions": bson.M{"$each": update.Questions},
-			"followers": bson.M{"$each": update.Followers},
+			"questions": bson.M{"$each":[]primitive.ObjectID{update.Questions}},
+			"followers": bson.M{"$each":[]primitive.ObjectID{update.Followers}},
 		},
 	}
 
