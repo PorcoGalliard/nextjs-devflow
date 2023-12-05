@@ -28,6 +28,7 @@ func NewMongoUserStore(client *mongo.Client) *MongoUserStore {
 type UserStore interface {
 	CreateUser(context.Context, *types.User) (*types.User, error)
 	GetUserByID(context.Context, string) (*types.User, error) 
+	UpdateUser(context.Context, *types.UpdateUserParam) (*types.User, error)
 }
 
 func (s *MongoUserStore) CreateUser(c context.Context, user *types.User) (*types.User, error) {
@@ -48,4 +49,19 @@ func (s *MongoUserStore) GetUserByID(ctx context.Context, id string) (*types.Use
 	}
 
 	return &user, nil
+}
+
+func (s *MongoUserStore) UpdateUser(ctx context.Context, update *types.UpdateUserParam) (*types.User ,error) {
+
+	filter := bson.M{"clerkID": update.ClerkID}
+	updateData := bson.M{"$set": update.UpdateData}
+
+	result := s.collection.FindOneAndUpdate(ctx, filter, updateData)
+
+	var updatedUser types.User
+	if err := result.Decode(&updatedUser); err != nil {
+		return nil, err
+	}
+
+	return &updatedUser, nil
 }

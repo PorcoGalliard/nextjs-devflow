@@ -80,7 +80,6 @@ func (s *MongoTagStore) UpdateTag(ctx context.Context, filter Map, update *types
 
 	filter["_id"] = oid
 
-
 	updateDoc := bson.M{
 		"$push": bson.M{
 			"questions": bson.M{"$each":[]primitive.ObjectID{update.Questions}},
