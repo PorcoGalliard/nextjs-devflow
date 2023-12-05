@@ -23,15 +23,13 @@ type Dropper interface {
 type MongoQuestionStore struct {
 	client *mongo.Client
 	coll *mongo.Collection
-	TagStore
 }
 
-func NewMongoQuestionStore(client *mongo.Client, tagStore TagStore) *MongoQuestionStore {
+func NewMongoQuestionStore(client *mongo.Client) *MongoQuestionStore {
 	var mongoenvdbname = os.Getenv("MONGO_DB_NAME")
 	return &MongoQuestionStore{
 		client: client,
 		coll: client.Database(mongoenvdbname).Collection(QUESTIONCOLL),
-		TagStore: tagStore,
 	}
 }
 
@@ -42,12 +40,12 @@ type QuestionStore interface {
 	AskQuestion(context.Context, *types.Question) (*types.Question, error)
 }
 
-func (s *MongoQuestionStore) Drop(ctx context.Context) error {
+func (s *Store) Drop(ctx context.Context) error {
 	fmt.Println("****DELETING DATABASE****")
-	return s.coll.Drop(ctx)
+	return s.Question.coll.Drop(ctx)
 }
 
-func (s *MongoQuestionStore) GetQuestionByID(ctx context.Context, id string) (*types.Question, error) {
+func (s *Store) GetQuestionByID(ctx context.Context, id string) (*types.Question, error) {
 
 	oid, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
@@ -55,14 +53,14 @@ func (s *MongoQuestionStore) GetQuestionByID(ctx context.Context, id string) (*t
 	}
 
 	var question types.Question
-	if err := s.coll.FindOne(ctx, bson.M{"_id":oid}).Decode(&question); err != nil {
+	if err := s.Question.coll.FindOne(ctx, bson.M{"_id":oid}).Decode(&question); err != nil {
 		return nil , err
 	}
 
 	return &question, nil
 }
 
-func (s *MongoQuestionStore) GetQuestions(ctx context.Context) ([]*types.Question, error) {
+func (s *Store) GetQuestions(ctx context.Context) ([]*types.Question, error) {
 	var questions []*types.Question
 
 	pipeline := []bson.M{
@@ -83,7 +81,7 @@ func (s *MongoQuestionStore) GetQuestions(ctx context.Context) ([]*types.Questio
 			{"$sort":bson.M{"createdAt":-1}},
 	}
 
-	cursor, err := s.coll.Aggregate(ctx, pipeline)
+	cursor, err := s.Question.coll.Aggregate(ctx, pipeline)
 	if err != nil {
 		return nil, err
 	}
@@ -103,8 +101,8 @@ func (s *MongoQuestionStore) GetQuestions(ctx context.Context) ([]*types.Questio
 	return questions, nil
 }
 
-func (s *MongoQuestionStore) AskQuestion(ctx context.Context, question *types.Question) (*types.Question, error) {
-	res, err := s.coll.InsertOne(ctx, question)
+func (s *Store) AskQuestion(ctx context.Context, question *types.Question) (*types.Question, error) {
+	res, err := s.Question.coll.InsertOne(ctx, question)
 	if err != nil {
 		return nil, err
 	}

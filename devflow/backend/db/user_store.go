@@ -32,8 +32,8 @@ type UserStore interface {
 	DeleteUser(context.Context, string) error
 }
 
-func (s *MongoUserStore) CreateUser(c context.Context, user *types.User) (*types.User, error) {
-	res, err := s.collection.InsertOne(c, user)
+func (s *Store) CreateUser(c context.Context, user *types.User) (*types.User, error) {
+	res, err := s.User.collection.InsertOne(c, user)
 	if err != nil {
 		return nil , err
 	}
@@ -43,21 +43,21 @@ func (s *MongoUserStore) CreateUser(c context.Context, user *types.User) (*types
 	return user, nil
 }
 
-func (s *MongoUserStore) GetUserByID(ctx context.Context, id string) (*types.User, error) {
+func (s *Store) GetUserByID(ctx context.Context, id string) (*types.User, error) {
 	var user types.User
-	if err := s.collection.FindOne(ctx, bson.M{"clerkID": id}).Decode(&user); err != nil {
+	if err := s.User.collection.FindOne(ctx, bson.M{"clerkID": id}).Decode(&user); err != nil {
 		return nil, err
 	}
 
 	return &user, nil
 }
 
-func (s *MongoUserStore) UpdateUser(ctx context.Context, clerkID string, update *types.UpdateUserParam) (*types.User ,error) {
+func (s *Store) UpdateUser(ctx context.Context, clerkID string, update *types.UpdateUserParam) (*types.User ,error) {
 
 	filter := bson.M{"clerkID": clerkID}
 	updateData := bson.M{"$set": update.UpdateData}
 
-	result := s.collection.FindOneAndUpdate(ctx, filter, updateData)
+	result := s.User.collection.FindOneAndUpdate(ctx, filter, updateData)
 
 	var updatedUser types.User
 	if err := result.Decode(&updatedUser); err != nil {
@@ -67,8 +67,8 @@ func (s *MongoUserStore) UpdateUser(ctx context.Context, clerkID string, update 
 	return &updatedUser, nil
 }
 
-func (s *MongoUserStore) DeleteUser(ctx context.Context, clerkID string) error {
-	_, err := s.collection.DeleteOne(ctx, bson.M{"clerkID": clerkID})
+func (s *Store) DeleteUser(ctx context.Context, clerkID string) error {
+	_, err := s.User.collection.DeleteOne(ctx, bson.M{"clerkID": clerkID})
 	if err != nil {
 		return err
 	}
