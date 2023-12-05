@@ -29,6 +29,7 @@ type UserStore interface {
 	CreateUser(context.Context, *types.User) (*types.User, error)
 	GetUserByID(context.Context, string) (*types.User, error) 
 	UpdateUser(context.Context, string, *types.UpdateUserParam) (*types.User, error)
+	DeleteUser(context.Context, string) error
 }
 
 func (s *MongoUserStore) CreateUser(c context.Context, user *types.User) (*types.User, error) {
@@ -64,4 +65,13 @@ func (s *MongoUserStore) UpdateUser(ctx context.Context, clerkID string, update 
 	}
 
 	return &updatedUser, nil
+}
+
+func (s *MongoUserStore) DeleteUser(ctx context.Context, clerkID string) error {
+	_, err := s.collection.DeleteOne(ctx, bson.M{"clerkID": clerkID})
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
