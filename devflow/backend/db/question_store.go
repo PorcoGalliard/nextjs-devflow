@@ -3,6 +3,7 @@ package db
 import (
 	"context"
 	"fmt"
+	"log"
 	"os"
 
 	"github.com/fullstack/dev-overflow/types"
@@ -63,20 +64,41 @@ func (s *MongoQuestionStore) GetQuestionByID(ctx context.Context, id string) (*t
 
 func (s *MongoQuestionStore) GetQuestions(ctx context.Context) ([]*types.Question, error) {
 	var questions []*types.Question
-	cur, err := s.coll.Find(ctx, bson.M{})
+
+	pipeline := []bson.M{
+		{
+			"$lookup": bson.M{
+				"from": "users",
+				"localField": "userID",
+				"foreignField": "_id",
+				"as": "user",
+			}},
+			{"$unwind":"$user"},
+			{"$lookup":bson.M{
+				"from": "tags",
+				"localField": "tags",
+				"foreignField": "_id",
+				"as": "tagDetails",
+			}},
+	}
+
+	cursor, err := s.coll.Aggregate(ctx, pipeline)
 	if err != nil {
 		return nil, err
 	}
-	defer cur.Close(ctx)
 
-	for cur.Next(ctx) {
+	defer cursor.Close(ctx)
+
+	for cursor.Next(ctx) {
 		var question types.Question
-		if err := cur.Decode(&question); err != nil {
+		if err := cursor.Decode(&question); err != nil {
 			return nil, err
 		}
+
 		questions = append(questions, &question)
 	}
 
+	log.Println(questions)
 	return questions, nil
 }
 
