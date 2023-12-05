@@ -50,6 +50,6 @@ func ErrBadRequest() Error {
 func ErrResourceNotFound(res string) Error {
 	return Error{
 		Code: fiber.StatusNotFound,
-		Message: res + "Resource Not Found",
+		Message: res + " Resource Not Found",
 	}
 }
