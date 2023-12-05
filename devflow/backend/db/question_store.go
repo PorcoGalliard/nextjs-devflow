@@ -80,6 +80,7 @@ func (s *MongoQuestionStore) GetQuestions(ctx context.Context) ([]*types.Questio
 				"foreignField": "_id",
 				"as": "tagDetails",
 			}},
+			{"$sort":bson.M{"createdAt":-1}},
 	}
 
 	cursor, err := s.coll.Aggregate(ctx, pipeline)
