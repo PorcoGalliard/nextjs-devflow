@@ -14,14 +14,14 @@ const USERCOLL = "users"
 
 type MongoUserStore struct {
 	client *mongo.Client
-	collection *mongo.Collection
+	coll *mongo.Collection
 }
 
 func NewMongoUserStore(client *mongo.Client) *MongoUserStore {
 	var mongoEnvDBName = os.Getenv("MONGO_DB_NAME")
 	return &MongoUserStore{
 		client: client,
-		collection: client.Database(mongoEnvDBName).Collection(USERCOLL),
+		coll: client.Database(mongoEnvDBName).Collection(USERCOLL),
 	}
 }
 
@@ -33,7 +33,7 @@ type UserStore interface {
 }
 
 func (s *Store) CreateUser(c context.Context, user *types.User) (*types.User, error) {
-	res, err := s.User.collection.InsertOne(c, user)
+	res, err := s.User.coll.InsertOne(c, user)
 	if err != nil {
 		return nil , err
 	}
@@ -45,7 +45,7 @@ func (s *Store) CreateUser(c context.Context, user *types.User) (*types.User, er
 
 func (s *Store) GetUserByID(ctx context.Context, id string) (*types.User, error) {
 	var user types.User
-	if err := s.User.collection.FindOne(ctx, bson.M{"clerkID": id}).Decode(&user); err != nil {
+	if err := s.User.coll.FindOne(ctx, bson.M{"clerkID": id}).Decode(&user); err != nil {
 		return nil, err
 	}
 
@@ -57,7 +57,7 @@ func (s *Store) UpdateUser(ctx context.Context, clerkID string, update *types.Up
 	filter := bson.M{"clerkID": clerkID}
 	updateData := bson.M{"$set": update.UpdateData}
 
-	result := s.User.collection.FindOneAndUpdate(ctx, filter, updateData)
+	result := s.User.coll.FindOneAndUpdate(ctx, filter, updateData)
 
 	var updatedUser types.User
 	if err := result.Decode(&updatedUser); err != nil {
@@ -68,10 +68,25 @@ func (s *Store) UpdateUser(ctx context.Context, clerkID string, update *types.Up
 }
 
 func (s *Store) DeleteUser(ctx context.Context, clerkID string) error {
-	_, err := s.User.collection.DeleteOne(ctx, bson.M{"clerkID": clerkID})
+	user, err := s.UserStore.GetUserByID(ctx, clerkID)
 	if err != nil {
 		return err
 	}
 
+	_, err = s.Question.coll.DeleteMany(ctx, bson.M{"userID": user.ID})
+	if err != nil {
+		return err
+	}
+
+	_, err = s.Tag.collection.UpdateMany(ctx, bson.M{"followers": user.ID}, bson.M{"$pull": bson.M{"followers": user.ID}})
+	if err != nil {
+		return err
+	}
+
+	_, err = s.User.coll.DeleteOne(ctx, bson.M{"userID": user.ID})
+	if err != nil {
+		return err
+	}
+	
 	return nil
 }
