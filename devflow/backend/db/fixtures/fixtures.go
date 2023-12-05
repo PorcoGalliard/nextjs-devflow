@@ -17,6 +17,9 @@ func AddQuestion(store *db.Store, title string, desc string, userID primitive.Ob
 		Description: desc,
 		UserID: userID,
 		Tags: tags,
+		Upvotes: []primitive.ObjectID{},
+		Downvotes: []primitive.ObjectID{},
+		Answers: []primitive.ObjectID{},
 		CreatedAt: createdAt,
 	}
 
@@ -34,7 +37,7 @@ func AddUser(store *db.Store, firstName string, lastName string, clerkID string,
 		LastName: lastName,
 		ClerkID: clerkID,
 		Email: email,
-		Password: encryptedPassword,
+		// Password: encryptedPassword,
 	})
 
 	if err != nil {
