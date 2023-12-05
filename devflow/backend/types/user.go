@@ -44,7 +44,6 @@ type CreateUserParam struct {
 }
 
 type UpdateUserParam struct {
-	ClerkID string `json:"clerkID"`
 	UpdateData User `json:"updateData"`
 }
 
@@ -71,6 +70,24 @@ func isValid(email string) bool {
 
 func IsValidPassword(encpw, pw string) bool {
 	return bcrypt.CompareHashAndPassword([]byte(encpw), []byte(pw)) == nil
+}
+
+func (params UpdateUserParam) Validate() map[string]string {
+	errors := map[string]string{}
+
+	if len(params.UpdateData.FirstName) < minFirstNameLen {
+		errors["FirstName"] = fmt.Sprintf("First Name must be at least %d characters", minFirstNameLen)
+	}
+
+	if len(params.UpdateData.LastName) < minLastNameLen {
+		errors["LastName"] = fmt.Sprintf("Last Name must be at least %d characters", minLastNameLen)
+	}
+
+	if !isValid(params.UpdateData.Email) {
+		errors["Email"] = fmt.Sprintf("Your email %s is not a valid email", params.UpdateData.Email)
+	}
+
+	return errors
 }
 
 func (params CreateUserParam) Validate() map[string]string {
