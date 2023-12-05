@@ -107,6 +107,7 @@ func (h *UserHandler) HandleCreateUser(c *fiber.Ctx) error {
 
 func (h *UserHandler) HandleUpdateUser(c *fiber.Ctx) error {
 	var (
+		clerkID = c.Params("clerkID")
 		params *types.UpdateUserParam
 	)
 
@@ -118,7 +119,7 @@ func (h *UserHandler) HandleUpdateUser(c *fiber.Ctx) error {
 		return c.JSON(errors)
 	}
 
-	updatedUser, err := h.userStore.UpdateUser(c.Context(), params)
+	updatedUser, err := h.userStore.UpdateUser(c.Context(), clerkID, params)
 	if err != nil {
 		return ErrBadRequest()
 	}
