@@ -18,7 +18,9 @@ type Question struct {
 	Title string `bson:"title" json:"title"`
 	Description string `bson:"description" json:"description"`
 	UserID primitive.ObjectID `bson:"userID,omitempty" json:"userID,omitempty"`
+	User *User `bson:"user,omitempty" json:"user,omitempty"`
 	Tags []primitive.ObjectID `bson:"tags" json:"tags"`
+	TagDetails []*Tag `bson:"tagDetails,omitempty" json:"tagDetails,omitempty"`
 	Views int `bson:"views" json:"views"`
 	Upvotes []primitive.ObjectID `bson:"upvotes" json:"upvotes"`
 	Downvotes []primitive.ObjectID `bson:"downvotes" json:"downvotes"`
