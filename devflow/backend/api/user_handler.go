@@ -2,6 +2,7 @@ package api
 
 import (
 	"errors"
+	"log"
 	"os"
 	"time"
 
@@ -95,6 +96,7 @@ func (h *UserHandler) HandleCreateUser(c *fiber.Ctx) error {
 		// EncryptedPassword: params.Password,
 		Picture: params.Picture,
 		JoinedAt: time.Now().UTC(),
+
 	}
 
 	insertedUser, err := h.userStore.CreateUser(c.Context(), user)
@@ -115,8 +117,10 @@ func (h *UserHandler) HandleUpdateUser(c *fiber.Ctx) error {
 		return ErrBadRequest()
 	}
 
-	if errors := params.Validate(); len(errors) > 0 {
-		return c.JSON(errors)
+	if params.UpdateData["email"] != nil || params.UpdateData["firstName"] != nil || params.UpdateData["lastName"] != nil {
+		if errors := params.Validate(); len(errors) > 0 {
+			return c.JSON(errors)
+		}
 	}
 
 	updatedUser, err := h.userStore.UpdateUser(c.Context(), clerkID, params)
@@ -124,6 +128,7 @@ func (h *UserHandler) HandleUpdateUser(c *fiber.Ctx) error {
 		return ErrBadRequest()
 	}
 
+	log.Println(updatedUser)
 	return c.JSON(updatedUser)
 
 }
