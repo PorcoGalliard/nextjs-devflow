@@ -3,14 +3,14 @@ type User = {
   clerkID: string;
   firstName: string;
   lastName: string;
-  bio: string | null;
-  picture: string | null;
+  bio: string;
+  picture: string;
   email: string;
-  location: string | null;
-  portfolioWebsite: string | null;
+  location: string;
+  portfolioWebsite: string;
   isAdmin: boolean;
-  reputation: number | null;
-  saved: string[] | null;
+  reputation: number;
+  saved: string[];
   joinedAt: string;
 };
 
