@@ -72,3 +72,35 @@ func (h *UserHandler) HandleGetUserByID(ctx *fiber.Ctx) error {
 
 	return ctx.JSON(user)
 }
+
+func (h *UserHandler) HandleCreateUser(c *fiber.Ctx) error {
+	var (
+		params types.CreateUserParam
+	)
+
+	if err := c.BodyParser(&params); err != nil {
+		return ErrBadRequest()
+	}
+
+	if errors := params.Validate(); len(errors) > 0 {
+		return c.JSON(errors)
+	
+	}
+
+	user := &types.User{
+		FirstName: params.FirstName,
+		LastName: params.LastName,
+		Email: params.Email,
+		ClerkID: params.ClerkID,
+		// EncryptedPassword: params.Password,
+		Picture: params.Picture,
+		JoinedAt: time.Now().UTC(),
+	}
+
+	insertedUser, err := h.userStore.CreateUser(c.Context(), user)
+	if err != nil {
+		return ErrBadRequest()
+	}
+
+	return c.JSON(insertedUser)
+}
