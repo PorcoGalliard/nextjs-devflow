@@ -8,9 +8,10 @@ import { formatAndDivideNumber, getTimestamp } from "@/lib/utils";
 
 interface QuestionCardProps {
   _id: string;
-  author: {
+  user: {
     _id: string;
-    name: string;
+    firstName: string;
+    lastName: string;
     picture?: string;
   };
   title: string;
@@ -18,15 +19,17 @@ interface QuestionCardProps {
     _id: string;
     name: string;
   }[];
-  upvotes: number;
+  upvotes: string[];
   views: number;
-  answers: Array<object>;
+  answers: {
+    _id: string;
+  }[];
   createdAt: Date;
 }
 
 const QuestionCard = ({
   _id,
-  author,
+  user,
   title,
   tags,
   upvotes,
@@ -59,17 +62,17 @@ const QuestionCard = ({
         <Metric
           imgUrl="/assets/icons/avatar.svg"
           alt="user"
-          value={author.name}
-          href={`/profile/${author._id}`}
+          value={user.firstName + " " + user.lastName}
+          href={`/profile/${user._id}`}
           title={` - asked ${getTimestamp(createdAt)}`}
-          isAuthor
+          isUser
           textStyles="small-medium text-dark400_light700"
         />
 
         <Metric
           imgUrl="/assets/icons/like.svg"
           alt="upvotes"
-          value={`${formatAndDivideNumber(upvotes)}`}
+          value={`${formatAndDivideNumber(upvotes.length)}`}
           title=" Votes"
           textStyles="small-medium text-dark400_light800"
         />
