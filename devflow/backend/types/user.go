@@ -44,7 +44,7 @@ type CreateUserParam struct {
 }
 
 type UpdateUserParam struct {
-	UpdateData User `json:"updateData"`
+	UpdateData map[string]interface{} `json:"updateData"`
 }
 
 func NewUserFromParams(params CreateUserParam) (*User, error) {
@@ -75,16 +75,22 @@ func IsValidPassword(encpw, pw string) bool {
 func (params UpdateUserParam) Validate() map[string]string {
 	errors := map[string]string{}
 
-	if len(params.UpdateData.FirstName) < minFirstNameLen {
-		errors["FirstName"] = fmt.Sprintf("First Name must be at least %d characters", minFirstNameLen)
+	if firstName, ok := params.UpdateData["firstName"].(string); ok {
+		if len(firstName) < minFirstNameLen {
+			errors["FirstName"] = fmt.Sprintf("First Name must be at least %d characters", minFirstNameLen)
+		}
 	}
 
-	if len(params.UpdateData.LastName) < minLastNameLen {
-		errors["LastName"] = fmt.Sprintf("Last Name must be at least %d characters", minLastNameLen)
+	if lastName, ok := params.UpdateData["lastName"].(string); ok {
+		if len(lastName) < minFirstNameLen {
+			errors["FirstName"] = fmt.Sprintf("Last Name must be at least %d characters", minFirstNameLen)
+		}
 	}
 
-	if !isValid(params.UpdateData.Email) {
-		errors["Email"] = fmt.Sprintf("Your email %s is not a valid email", params.UpdateData.Email)
+	if email, ok := params.UpdateData["email"].(string); ok {
+		if !isValid(email) {
+			errors["Email"] = fmt.Sprintf("Your email %s is not a valid email", email)
+		}
 	}
 
 	return errors
