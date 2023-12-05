@@ -1,4 +1,7 @@
+"use client";
+
 import QuestionCard from "@/components/card/QuestionCard";
+import Question from "@/database/question.model";
 import HomeFilters from "@/components/home/HomeFilters";
 import Filter from "@/components/shared/Filter";
 import NoResult from "@/components/shared/NoResult";
@@ -6,44 +9,24 @@ import LocalSearch from "@/components/shared/search/LocalSearch";
 import { Button } from "@/components/ui/button";
 import { HomePageFilters } from "@/constants/filters";
 import Link from "next/link";
-
-const questions = [
-  {
-    _id: "1",
-    title: "Bagaimana cara membuat goroutine di Golang",
-    tags: [
-      { _id: "1", name: "Mutex" },
-      { _id: "2", name: "Golang" },
-    ],
-    author: {
-      _id: "1",
-      name: "John Doe",
-      picture: "url/to/john-doe-picture.jpg",
-    },
-    upvotes: 10223,
-    views: 30236,
-    answers: [],
-    createdAt: new Date("2021-09-01T12:00:00.000Z"),
-  },
-  {
-    _id: "2",
-    title: "Bagaimana cara menggunakan gRPC di Golang",
-    tags: [
-      { _id: "1", name: "Microservice" },
-      { _id: "2", name: "Golang" },
-    ],
-    author: {
-      _id: "2",
-      name: "John Wick",
-    },
-    upvotes: 10,
-    views: 30,
-    answers: [],
-    createdAt: new Date("2021-09-01T12:00:00.000Z"),
-  },
-];
+import { useEffect, useState } from "react";
+import axios from "axios";
 
 export default function Home() {
+  const [questions, setQuestions] = useState<Question[]>([]);
+
+  useEffect(() => {
+    const fetchQuestions = async () => {
+      const response = await axios.get("http://localhost:5000/api/v1/question");
+      const mongoQuestions = response.data;
+      console.log(mongoQuestions);
+      setQuestions(mongoQuestions);
+    };
+
+    fetchQuestions();
+  }, []);
+
+  if (!questions) return <div>Loading...</div>;
 
   return (
     <>
@@ -76,9 +59,9 @@ export default function Home() {
             <QuestionCard
               key={question._id}
               _id={question._id}
-              author={question.author}
+              user={question.user}
               title={question.title}
-              tags={question.tags}
+              tags={question.tagDetails}
               upvotes={question.upvotes}
               views={question.views}
               answers={question.answers}
