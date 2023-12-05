@@ -104,3 +104,25 @@ func (h *UserHandler) HandleCreateUser(c *fiber.Ctx) error {
 
 	return c.JSON(insertedUser)
 }
+
+func (h *UserHandler) HandleUpdateUser(c *fiber.Ctx) error {
+	var (
+		params *types.UpdateUserParam
+	)
+
+	if err := c.BodyParser(&params); err != nil {
+		return ErrBadRequest()
+	}
+
+	if errors := params.Validate(); len(errors) > 0 {
+		return c.JSON(errors)
+	}
+
+	updatedUser, err := h.userStore.UpdateUser(c.Context(), params)
+	if err != nil {
+		return ErrBadRequest()
+	}
+
+	return c.JSON(updatedUser)
+
+}
