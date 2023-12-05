@@ -132,3 +132,15 @@ func (h *UserHandler) HandleUpdateUser(c *fiber.Ctx) error {
 	return c.JSON(updatedUser)
 
 }
+
+func (h *UserHandler) HandleDeleteUser(c *fiber.Ctx) error {
+	var (
+		clerkID = c.Params("clerkID")
+	)
+
+	if err := h.userStore.DeleteUser(c.Context(), clerkID); err != nil {
+		return ErrBadRequest()
+	}
+
+	return c.JSON(map[string]string{"message": "User berhasil dihapus dengan ID => " + clerkID})
+}
