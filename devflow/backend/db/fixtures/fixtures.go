@@ -23,7 +23,7 @@ func AddQuestion(store *db.Store, title string, desc string, userID primitive.Ob
 		CreatedAt: createdAt,
 	}
 
-	insertedQuestion, err := store.QuestionStore.AskQuestion(context.Background(), question)
+	insertedQuestion, err := store.Question.AskQuestion(context.Background(), question)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -44,7 +44,7 @@ func AddUser(store *db.Store, firstName string, lastName string, clerkID string,
 		log.Fatal(err)
 	}
 
-	insertedUser, err := store.UserStore.CreateUser(context.Background(), user)
+	insertedUser, err := store.User.CreateUser(context.Background(), user)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -60,7 +60,7 @@ func AddTag(store *db.Store, name string) (*types.Tag) {
 		CreatedAt: time.Now().UTC(),
 	}
 
-	insertedTag, err := store.TagStore.CreateTag(context.Background(), tag)
+	insertedTag, err := store.Tag.CreateTag(context.Background(), tag)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -69,11 +69,11 @@ func AddTag(store *db.Store, name string) (*types.Tag) {
 }
 
 func UpdateTag(store *db.Store, tagID primitive.ObjectID, update *types.UpdateTagQuestionAndFollowers) (*types.Tag, error) {
-	if err := store.TagStore.UpdateTag(context.Background(), db.Map{"_id":tagID}, update); err != nil {
+	if err := store.Tag.UpdateTag(context.Background(), db.Map{"_id":tagID}, update); err != nil {
 		log.Fatal(err)
 	}
 	
-	realTag, err := store.TagStore.GetTagByID(context.Background(), tagID.Hex())
+	realTag, err := store.Tag.GetTagByID(context.Background(), tagID.Hex())
 	if err != nil {
 		log.Fatal(err)
 	}

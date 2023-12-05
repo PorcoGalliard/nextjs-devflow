@@ -34,7 +34,7 @@ type TagStore interface {
 	UpdateTag(context.Context, Map, *types.UpdateTagQuestionAndFollowers) error
 }
 
-func (s *Store) GetTagByID(ctx context.Context, id string) (*types.Tag, error) {
+func (s *MongoTagStore) GetTagByID(ctx context.Context, id string) (*types.Tag, error) {
 
 	oid, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
@@ -42,26 +42,26 @@ func (s *Store) GetTagByID(ctx context.Context, id string) (*types.Tag, error) {
 	}
 
 	var tag types.Tag
-	if err := s.Tag.collection.FindOne(ctx, bson.M{"_id": oid}).Decode(&tag); err != nil {
+	if err := s.collection.FindOne(ctx, bson.M{"_id": oid}).Decode(&tag); err != nil {
 		return nil, err
 	}
 
 	return &tag, nil
 }
 
-func (s *Store) GetTagByName(ctx context.Context, name string) (*types.Tag, error) {
+func (s *MongoTagStore) GetTagByName(ctx context.Context, name string) (*types.Tag, error) {
 	var tag types.Tag
 	name = utils.FormatTag(name)
-	if err := s.Tag.collection.FindOne(ctx, bson.M{"name": name}).Decode(&tag); err != nil {
+	if err := s.collection.FindOne(ctx, bson.M{"name": name}).Decode(&tag); err != nil {
 		return nil, err
 	}
 
 	return &tag, nil
 }
 
-func (s *Store) CreateTag(c context.Context, tag *types.Tag) (*types.Tag, error) {
+func (s *MongoTagStore) CreateTag(c context.Context, tag *types.Tag) (*types.Tag, error) {
 	tag.Name = utils.FormatTag(tag.Name)
-	res, err := s.Tag.collection.InsertOne(c, tag)
+	res, err := s.collection.InsertOne(c, tag)
 	if err != nil {
 		return nil , err
 	}
@@ -71,7 +71,7 @@ func (s *Store) CreateTag(c context.Context, tag *types.Tag) (*types.Tag, error)
 	return tag, nil
 }
 
-func (s *Store) UpdateTag(ctx context.Context, filter Map, update *types.UpdateTagQuestionAndFollowers) error {
+func (s *MongoTagStore) UpdateTag(ctx context.Context, filter Map, update *types.UpdateTagQuestionAndFollowers) error {
 
 	oid, ok := filter["_id"]
 	if !ok {
@@ -87,7 +87,7 @@ func (s *Store) UpdateTag(ctx context.Context, filter Map, update *types.UpdateT
 		},
 	}
 
-	_, err := s.Tag.collection.UpdateOne(ctx, filter, updateDoc)
+	_, err := s.collection.UpdateOne(ctx, filter, updateDoc)
 	if err != nil {
 		return err
 	}

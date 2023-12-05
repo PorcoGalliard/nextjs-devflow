@@ -53,8 +53,11 @@ func main() {
 	apiv1.Get("/question", questionHandler.HandleGetQuestions)
 
 	// User Handler
-	auth.Post("/sign-up", userHandler.HandleSignUp)
+	// auth.Post("/sign-up", userHandler.HandleSignUp)
+	auth.Post("/sign-up", userHandler.HandleCreateUser)
 	apiv1.Get("/user/:clerkID", userHandler.HandleGetUserByID)
+	apiv1.Put("/user/:clerkID", userHandler.HandleUpdateUser)
+	apiv1.Delete("/user/:clerkID", userHandler.HandleDeleteUser)
 
 	// Tag Handler
 	apiv1.Get("/tag/:_id", tagHandler.HandleGetTagByID)
