@@ -24,20 +24,23 @@ type MongoQuestionStore struct {
 	client *mongo.Client
 	coll *mongo.Collection
 	TagStore
+	UserStore
 }
 
-func NewMongoQuestionStore(client *mongo.Client, tagStore TagStore) *MongoQuestionStore {
+func NewMongoQuestionStore(client *mongo.Client, tagStore TagStore, userStore UserStore) *MongoQuestionStore {
 	var mongoenvdbname = os.Getenv("MONGO_DB_NAME")
 	return &MongoQuestionStore{
 		client: client,
 		coll: client.Database(mongoenvdbname).Collection(QUESTIONCOLL),
 		TagStore: tagStore,
+		UserStore: userStore,
 	}
 }
 
 type QuestionStore interface {
 	Dropper
 	GetQuestionByID(context.Context, string) (*types.Question, error)
+	GetQuestionsByUserID(context.Context, string) ([]*types.Question, error)
 	GetQuestions(context.Context) ([]*types.Question, error)
 	AskQuestion(context.Context, *types.Question) (*types.Question, error)
 	DeleteQuestionByID(context.Context, string) error
@@ -62,6 +65,36 @@ func (s *MongoQuestionStore) GetQuestionByID(ctx context.Context, id string) (*t
 	}
 
 	return &question, nil
+}
+
+func (s *MongoQuestionStore) GetQuestionsByUserID(ctx context.Context, id string) ([]*types.Question, error) {
+	var questions []*types.Question
+
+	user, err := s.UserStore.GetUserByID(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+
+	oid := user.ID
+
+	cursor, err := s.coll.Find(ctx, bson.M{"userID": oid})
+	if err != nil {
+		return nil, err
+	}
+
+	defer cursor.Close(ctx)
+
+	for cursor.Next(ctx) {
+		var question types.Question
+		if err := cursor.Decode(&question); err != nil {
+			return nil, err
+		}
+
+		questions = append(questions, &question)
+	}
+
+	return questions, nil
+
 }
 
 func (s *MongoQuestionStore) GetQuestions(ctx context.Context) ([]*types.Question, error) {
@@ -136,7 +169,7 @@ func (s *MongoQuestionStore) DeleteQuestionByID(ctx context.Context, id string) 
 }
 
 func (s *MongoQuestionStore) DeleteManyQuestionsByUserID(ctx context.Context, id primitive.ObjectID) error {
-	_, err := s.coll.DeleteMany(ctx, bson.M{"_id": bson.M{"userID": id}})
+	_, err := s.coll.DeleteMany(ctx, bson.M{"userID": id})
 	if err != nil {
 		return err
 	}
