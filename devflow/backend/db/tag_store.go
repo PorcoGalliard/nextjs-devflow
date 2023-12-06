@@ -32,6 +32,7 @@ type TagStore interface {
 	GetTagByID(context.Context, string) (*types.Tag, error)
 	GetTagByName(context.Context, string) (*types.Tag, error)
 	UpdateTag(context.Context, Map, *types.UpdateTagQuestionAndFollowers) error
+	UpdateManyFollowersByID(context.Context, primitive.ObjectID) error
 }
 
 func (s *MongoTagStore) GetTagByID(ctx context.Context, id string) (*types.Tag, error) {
@@ -88,6 +89,15 @@ func (s *MongoTagStore) UpdateTag(ctx context.Context, filter Map, update *types
 	}
 
 	_, err := s.collection.UpdateOne(ctx, filter, updateDoc)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (s *MongoTagStore) UpdateManyFollowersByID(ctx context.Context, id primitive.ObjectID) error {
+	_, err := s.collection.UpdateMany(ctx, bson.M{"followers": id}, bson.M{"$pull": bson.M{"followers": id}})
 	if err != nil {
 		return err
 	}
