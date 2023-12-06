@@ -2,7 +2,6 @@ package api
 
 import (
 	"errors"
-	"log"
 	"os"
 	"time"
 
@@ -121,14 +120,11 @@ func (h *UserHandler) HandleUpdateUser(c *fiber.Ctx) error {
 		}
 	}
 
-	updatedUser, err := h.userStore.UpdateUser(c.Context(), clerkID, params)
-	if err != nil {
+	if err := h.userStore.UpdateUser(c.Context(), clerkID, params); err != nil {
 		return ErrBadRequest()
 	}
 
-	log.Println(updatedUser)
-	return c.JSON(updatedUser)
-
+	return c.JSON(map[string]string{"message": "User berhasil diupdate dengan ID => " + clerkID})
 }
 
 func (h *UserHandler) HandleDeleteUser(c *fiber.Ctx) error {
