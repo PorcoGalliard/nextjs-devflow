@@ -58,8 +58,10 @@ func NewUserFromParams(params CreateUserParam) (*User, error) {
 		LastName: params.LastName,
 		ClerkID: params.ClerkID,
 		Email: params.Email,
+		Picture: params.Picture,
 		// EncryptedPassword: string(encpw),
 		JoinedAt: time.Now().UTC(),
+		Saved: []primitive.ObjectID{},
 	}, nil
 }
 
