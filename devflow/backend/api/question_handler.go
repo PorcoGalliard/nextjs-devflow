@@ -120,6 +120,44 @@ func (h *QuestionHandler) HandleAskQuestion(ctx *fiber.Ctx) error {
 	return ctx.JSON(insertedQuestion)
 }
 
+func (h *QuestionHandler) HandleDeleteQuestionByID(ctx *fiber.Ctx) error {
+	var (
+		id = ctx.Params("_id")
+		params types.DeleteQuestionParams
+	)
+
+	if err := ctx.BodyParser(&params); err != nil {
+		return ErrBadRequest()
+	}
+
+	user, err := h.userStore.GetUserByID(ctx.Context(), params.UserID)
+	if err != nil {
+		if errors.Is(err, mongo.ErrNoDocuments) {
+			return ErrResourceNotFound(params.UserID)
+		}
+	}
+
+	question, err := h.questionStore.GetQuestionByID(ctx.Context(), id)
+	if err != nil {
+		if errors.Is(err, mongo.ErrNoDocuments) {
+			return ErrResourceNotFound(id)
+		}
+	}
+
+	if question.UserID != user.ID {
+		return ErrUnauthorized()
+	}
+
+	if question.UserID == user.ID {
+		if err := h.questionStore.DeleteQuestionByID(ctx.Context(), id); err != nil {
+			return ErrBadRequest()
+		
+		}
+	}
+
+	return nil
+}
+
 func (h *QuestionHandler) HandleDeleteManyByID(ctx *fiber.Ctx) error {
 	var (
 		id = ctx.Params("id")
