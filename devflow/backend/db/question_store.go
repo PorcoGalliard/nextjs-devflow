@@ -40,6 +40,8 @@ type QuestionStore interface {
 	GetQuestionByID(context.Context, string) (*types.Question, error)
 	GetQuestions(context.Context) ([]*types.Question, error)
 	AskQuestion(context.Context, *types.Question) (*types.Question, error)
+	DeleteQuestionByID(context.Context, string) error
+	DeleteManyQuestionsByUserID(context.Context, primitive.ObjectID) error
 }
 
 func (s *MongoQuestionStore) Drop(ctx context.Context) error {
@@ -118,4 +120,12 @@ func (s *MongoQuestionStore) AskQuestion(ctx context.Context, question *types.Qu
 	}
 
 	return question, nil
+}
+
+func (s *MongoQuestionStore) DeleteManyQuestionsByUserID(ctx context.Context, id primitive.ObjectID) error {
+	_, err := s.coll.DeleteMany(ctx, bson.M{"_id": bson.M{"userID": id}})
+	if err != nil {
+		return err
+	}
+	return nil
 }
