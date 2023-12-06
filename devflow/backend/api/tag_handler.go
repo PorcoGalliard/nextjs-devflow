@@ -12,11 +12,13 @@ import (
 
 type TagHandler struct {
 	tagStore db.TagStore
+	userStore db.UserStore
 }
 
-func NewTagHandler(tagStore db.TagStore) *TagHandler {
+func NewTagHandler(tagStore db.TagStore, userStore db.UserStore) *TagHandler {
 	return &TagHandler{
 		tagStore: tagStore,
+		userStore: userStore,
 	}
 }
 
