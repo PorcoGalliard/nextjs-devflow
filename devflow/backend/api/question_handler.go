@@ -43,6 +43,22 @@ func (h *QuestionHandler) HandleGetQuestionByID(ctx *fiber.Ctx) error {
 	return ctx.JSON(question)
 }
 
+func (h *QuestionHandler) HandleGetQuestionsByUserID(ctx *fiber.Ctx) error {
+	var (
+		id = ctx.Params("_id")
+	)
+
+	questions, err := h.questionStore.GetQuestionsByUserID(ctx.Context(), id)
+	if err != nil {
+		if errors.Is(err, mongo.ErrNoDocuments) {
+			return ErrResourceNotFound(id)
+		}
+		return err
+	}
+
+	return ctx.JSON(questions)
+}
+
 func (h *QuestionHandler) HandleGetQuestions(ctx *fiber.Ctx) error {
 	questions, err := h.questionStore.GetQuestions(ctx.Context())
 	if err != nil {
