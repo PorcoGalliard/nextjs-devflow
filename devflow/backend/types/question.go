@@ -35,6 +35,10 @@ type AskQuestionParams struct {
 	Tags []string `json:"tags"`
 }
 
+type DeleteQuestionParams struct {
+	UserID string `json:"userID"`
+}
+
 func (params AskQuestionParams) Validate() map[string]string {
 	errors := map[string]string{}
 
