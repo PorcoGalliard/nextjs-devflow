@@ -51,6 +51,15 @@ func (h *TagHandler) HandleGetTagByName(ctx *fiber.Ctx) error {
 	return ctx.JSON(tag)
 }
 
+func (h *TagHandler) HandleGetTags(ctx *fiber.Ctx) error {
+	tags, err := h.tagStore.GetTags(ctx.Context())
+	if err != nil {
+		return ErrBadRequest()
+	}
+
+	return ctx.JSON(tags)
+}
+
 func (h *TagHandler) HandleCreateTag(ctx *fiber.Ctx) error {
 	var params types.CreateTagParams
 
