@@ -92,15 +92,9 @@ func (h *UserHandler) HandleCreateUser(c *fiber.Ctx) error {
 	
 	}
 
-	user := &types.User{
-		FirstName: params.FirstName,
-		LastName: params.LastName,
-		Email: params.Email,
-		ClerkID: params.ClerkID,
-		// EncryptedPassword: params.Password,
-		Picture: params.Picture,
-		JoinedAt: time.Now().UTC(),
-
+	user, err := types.NewUserFromParams(params)
+	if err != nil {
+		return ErrBadRequest()
 	}
 
 	insertedUser, err := h.userStore.CreateUser(c.Context(), user)
