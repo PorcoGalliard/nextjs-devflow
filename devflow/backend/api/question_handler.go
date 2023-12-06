@@ -119,3 +119,29 @@ func (h *QuestionHandler) HandleAskQuestion(ctx *fiber.Ctx) error {
 
 	return ctx.JSON(insertedQuestion)
 }
+
+func (h *QuestionHandler) HandleDeleteManyByID(ctx *fiber.Ctx) error {
+	var (
+		id = ctx.Params("id")
+	)
+
+	if err := ctx.BodyParser(&id); err != nil {
+		return ErrBadRequest()
+	}
+
+	user, err := h.userStore.GetUserByID(ctx.Context(), id)
+	if err != nil {
+		if errors.Is(err, mongo.ErrNoDocuments) {
+			return ErrResourceNotFound(id)
+		}
+	
+	}
+
+	if err := h.questionStore.DeleteManyQuestionsByUserID(ctx.Context(), user.ID); err != nil {
+		return ErrBadRequest()
+	}
+
+	return ctx.JSON(fiber.Map{
+		"message": "success deleting questions",
+	})
+}
