@@ -73,7 +73,7 @@ func (s *MongoUserStore) DeleteUser(ctx context.Context, clerkID string) error {
 		return err
 	}
 
-	_, err = s.coll.DeleteOne(ctx, bson.M{"userID": user.ID})
+	_, err = s.coll.DeleteOne(ctx, bson.M{"_id": user.ID})
 	if err != nil {
 		return err
 	}
