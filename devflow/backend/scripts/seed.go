@@ -40,7 +40,7 @@ func main() {
 
 	userStore := db.NewMongoUserStore(mongoClient)
 	tagStore := db.NewMongoTagStore(mongoClient)
-	questionStore := db.NewMongoQuestionStore(mongoClient, tagStore)
+	questionStore := db.NewMongoQuestionStore(mongoClient, tagStore, userStore)
 	store := &db.Store{
 		Question: questionStore,
 		User: userStore,
