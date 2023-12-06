@@ -143,6 +143,17 @@ func (h *UserHandler) HandleDeleteUser(c *fiber.Ctx) error {
 		return ErrBadRequest()
 	}
 
+	questions, err := h.questionStore.GetQuestionsByUserID(c.Context(), clerkID)
+	if err != nil {
+		return ErrBadRequest()
+	}
+
+	for i := 0; i < len(questions); i++ {
+		if err := h.tagStore.UpdateManyQuestionsByID(c.Context(), questions[i].ID); err != nil {
+			return ErrBadRequest()
+		}
+	}
+
 	if err := h.questionStore.DeleteManyQuestionsByUserID(c.Context(), user.ID); err != nil {
 		return ErrBadRequest()
 	}
