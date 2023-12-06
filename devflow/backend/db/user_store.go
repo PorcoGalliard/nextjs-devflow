@@ -73,17 +73,7 @@ func (s *MongoUserStore) DeleteUser(ctx context.Context, clerkID string) error {
 		return err
 	}
 
-	_, err = s.Question.coll.DeleteMany(ctx, bson.M{"userID": user.ID})
-	if err != nil {
-		return err
-	}
-
-	_, err = s.Tag.collection.UpdateMany(ctx, bson.M{"followers": user.ID}, bson.M{"$pull": bson.M{"followers": user.ID}})
-	if err != nil {
-		return err
-	}
-
-	_, err = s.User.coll.DeleteOne(ctx, bson.M{"userID": user.ID})
+	_, err = s.coll.DeleteOne(ctx, bson.M{"userID": user.ID})
 	if err != nil {
 		return err
 	}

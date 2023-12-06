@@ -16,11 +16,15 @@ import (
 
 type UserHandler struct {
 	userStore db.UserStore
+	tagStore db.TagStore
+	questionStore db.QuestionStore
 }
 
-func NewUserHandler(userStore db.UserStore) *UserHandler {
+func NewUserHandler(userStore db.UserStore, tagStore db.TagStore, questionStore db.QuestionStore) *UserHandler {
 	return &UserHandler{
 		userStore: userStore,
+		tagStore: tagStore,
+		questionStore: questionStore,
 	}
 }
 
@@ -137,6 +141,21 @@ func (h *UserHandler) HandleDeleteUser(c *fiber.Ctx) error {
 	var (
 		clerkID = c.Params("clerkID")
 	)
+
+	user, err := h.userStore.GetUserByID(c.Context(), clerkID)
+	if err != nil {
+		if errors.Is(err, mongo.ErrNoDocuments) {
+			return ErrResourceNotFound(clerkID)
+		}
+	}
+
+	if err := h.tagStore.UpdateManyFollowersByID(c.Context(), user.ID); err != nil {
+		return ErrBadRequest()
+	}
+
+	if err := h.questionStore.DeleteManyQuestionsByUserID(c.Context(), user.ID); err != nil {
+		return ErrBadRequest()
+	}
 
 	if err := h.userStore.DeleteUser(c.Context(), clerkID); err != nil {
 		return ErrBadRequest()
