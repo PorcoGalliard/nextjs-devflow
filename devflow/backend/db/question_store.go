@@ -122,6 +122,19 @@ func (s *MongoQuestionStore) AskQuestion(ctx context.Context, question *types.Qu
 	return question, nil
 }
 
+func (s *MongoQuestionStore) DeleteQuestionByID(ctx context.Context, id string) error {
+
+	oid,err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		return err
+	}
+
+	if err := s.coll.FindOneAndDelete(ctx, bson.M{"_id": oid}).Err(); err != nil {
+		return err
+	}
+	return nil
+}
+
 func (s *MongoQuestionStore) DeleteManyQuestionsByUserID(ctx context.Context, id primitive.ObjectID) error {
 	_, err := s.coll.DeleteMany(ctx, bson.M{"_id": bson.M{"userID": id}})
 	if err != nil {
