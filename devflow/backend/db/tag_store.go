@@ -31,8 +31,10 @@ type TagStore interface {
 	CreateTag(context.Context, *types.Tag) (*types.Tag, error)
 	GetTagByID(context.Context, string) (*types.Tag, error)
 	GetTagByName(context.Context, string) (*types.Tag, error)
+	GetTags(context.Context) ([]*types.Tag, error)
 	UpdateTag(context.Context, Map, *types.UpdateTagQuestionAndFollowers) error
 	UpdateManyFollowersByID(context.Context, primitive.ObjectID) error
+	UpdateManyQuestionsByID(context.Context, primitive.ObjectID) error
 }
 
 func (s *MongoTagStore) GetTagByID(ctx context.Context, id string) (*types.Tag, error) {
@@ -58,6 +60,21 @@ func (s *MongoTagStore) GetTagByName(ctx context.Context, name string) (*types.T
 	}
 
 	return &tag, nil
+}
+
+func (s *MongoTagStore) GetTags(ctx context.Context) ([]*types.Tag, error) {
+	var tags []*types.Tag
+	cursor, err := s.collection.Find(ctx, bson.M{})
+	if err != nil {
+		return nil, err
+	}
+
+	if err := cursor.All(ctx, &tags); err != nil {
+		return nil, err
+	}
+
+	return tags, nil
+
 }
 
 func (s *MongoTagStore) CreateTag(c context.Context, tag *types.Tag) (*types.Tag, error) {
@@ -98,6 +115,15 @@ func (s *MongoTagStore) UpdateTag(ctx context.Context, filter Map, update *types
 
 func (s *MongoTagStore) UpdateManyFollowersByID(ctx context.Context, id primitive.ObjectID) error {
 	_, err := s.collection.UpdateMany(ctx, bson.M{"followers": id}, bson.M{"$pull": bson.M{"followers": id}})
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (s *MongoTagStore) UpdateManyQuestionsByID(ctx context.Context, id primitive.ObjectID) error {
+	_, err := s.collection.UpdateMany(ctx, bson.M{"questions": id}, bson.M{"$pull": bson.M{"questions": id}})
 	if err != nil {
 		return err
 	}
